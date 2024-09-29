@@ -343,26 +343,65 @@ class LUC_AVLTree {
 
     private Node deleteElement(int value, Node node) {
 
-        /*
-         * ADD CODE HERE
-         * 
-         * NOTE, that you should use the existing coded private methods
-         * in this file, which include:
-         *      - minValueNode,
-         *      - getMaxHeight,
-         *      - getHeight,
-         *      - getBalanceFactor,
-         *      - LLRotation
-         *      - RRRotation,
-         *      - LRRotation,
-         *      - RLRotation.
-         *
-         * To understand what each of these methods do, see the method prologues and
-         * code for each. You can also look at the method InsertElement, as it has do
-         * do many of the same things as this method.
-         */
+        // Base case: If the node is null, return null (element not found)
+        if (node == null) {
+            return null;
+        }
 
-        return node;
+        // Recursive case: Traverse the tree to find the node to delete
+        if (value < node.value) {
+            // Value is smaller than the node's value, go to the left subtree
+            node.leftChild = deleteElement(value, node.leftChild);
+        } else if (value > node.value) {
+            // Value is greater than the node's value, go to the right subtree
+            node.rightChild = deleteElement(value, node.rightChild);
+        } else {
+            // Node with the value found
+            // Scenario 1: Leaf node (no children)
+            if (node.leftChild == null && node.rightChild == null) {
+                return null; // Remove the node
+            }
+
+            // Scenario 2: Node with only one child
+            if (node.leftChild == null) {
+                return node.rightChild; // Replace with right subtree
+            } else if (node.rightChild == null) {
+                return node.leftChild; // Replace with left subtree
+            }
+
+            // Scenario 4: Node with two children
+            // Find the inorder successor (smallest in the right subtree)
+            Node successor = minValueNode(node.rightChild);
+            // Replace the value of the node to delete with the successor's value
+            node.value = successor.value;
+            // Delete the inorder successor
+            node.rightChild = deleteElement(successor.value, node.rightChild);
+        }
+
+        // Recalculate height of the current node
+        node.height = getMaxHeight(getHeight(node.leftChild), getHeight(node.rightChild)) + 1;
+
+        // Check balance factor and perform rotations if needed
+        int balanceFactor = getBalanceFactor(node);
+
+        // Left Left Case
+        if (balanceFactor > 1 && getBalanceFactor(node.leftChild) >= 0) {
+            return LLRotation(node);
+        }
+        // Left Right Case
+        if (balanceFactor > 1 && getBalanceFactor(node.leftChild) < 0) {
+            return LRRotation(node);
+        }
+        // Right Right Case
+        if (balanceFactor < -1 && getBalanceFactor(node.rightChild) <= 0) {
+            return RRRotation(node);
+        }
+        // Right Left Case
+        if (balanceFactor < -1 && getBalanceFactor(node.rightChild) > 0) {
+            return RLRotation(node);
+        }
+
+        return node; // Return the (possibly new) root node
     }
 
 

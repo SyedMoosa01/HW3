@@ -20,14 +20,20 @@ public class TreeProblems {
    */
   
   public static Set<Integer> different(Set<Integer> setA, Set<Integer> setB) {
+    if (setA == null || setB == null) {
+      throw new IllegalArgumentException("Input sets cannot be null");
+    }
 
-    // INSERT CODE HERE - DO NOT FORGET TO PLACE YOUR NAME ABOVE
-    //
-    // This can be done numerous ways, but once such will only that
-    // *several* lines of code. Hint: create two temporary TreeSets and utilize the
-    // methods retainAll(), addAll(), and removeAll(). But in the end, get something to work.
+    Set<Integer> resultSet = new TreeSet<>(setA);
+    resultSet.removeAll(setB); // Elements in setA but not in setB
 
-    return setA;
+    for (Integer value : setB) {
+      if (!setA.contains(value)) {
+        resultSet.add(value); // Add elements in setB but not in setA
+      }
+    }
+
+    return resultSet; // Return the combined set of unique elements
   }
 
 
@@ -39,10 +45,15 @@ public class TreeProblems {
    */
 
   public static void removeEven(Map<Integer, String> treeMap) {
+// Use an iterator to safely remove entries while iterating
+    Iterator<Map.Entry<Integer, String>> iterator = treeMap.entrySet().iterator();
 
-    // INSERT CODE HERE.
-
-    return;
+    while (iterator.hasNext()) {
+      Map.Entry<Integer, String> entry = iterator.next();
+      if (entry.getKey() % 2 == 0) {
+        iterator.remove(); // Remove the entry if the key is even
+      }
+    }
   }
 
 
@@ -55,10 +66,27 @@ public class TreeProblems {
 
   public boolean treesEqual(Map<Integer, String> tree1,Map<Integer, String> tree2 ) {
 
-    // INSERT CODE HERE
+    // Check for null maps
+    if (tree1 == null || tree2 == null) {
+      return false; // Consider null maps as not equal
+    }
 
-    return false;
 
+    //check if the sizes are the same
+    if (tree1.size() != tree2.size()) {
+      return false; // Not equal if sizes differ
+    }
+
+    // Compare the entries of both maps
+    for (Map.Entry<Integer, String> entry : tree1.entrySet()) {
+      // Check if the key exists in tree2 and the values are the same
+      if (!tree2.containsKey(entry.getKey()) ||
+              !tree2.get(entry.getKey()).equals(entry.getValue())) {
+        return false; // If key or value doesn't match, they're not equal
+      }
+    }
+
+    return true; // Trees are equal if all checks pass
   }
 
 } // end treeProblems class
